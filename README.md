@@ -8,7 +8,7 @@
 Install dependencies:
 
 ```sh
-$ sudo apt install clang-10-dev cmake
+$ sudo apt install libclang-10-dev cmake
 ```
 
 Compiling:
