@@ -21,7 +21,7 @@ $ make
 
 Then you can get `coco` executable under current directory.
 
-### Sample
+### Example
 
 Before:
 
