@@ -157,7 +157,7 @@ public:
 		AlignConsecutiveAssignments = false;
 		AlignConsecutiveDeclarations = false;
 		AlignEscapedNewlines = ENAS_DontAlign;
-		AlignOperands = false;
+		AlignOperands = OAS_AlignAfterOperator;
 		AlignTrailingComments = false;
 		AllowAllArgumentsOnNextLine = true;
 		AllowAllConstructorInitializersOnNextLine = false;
