@@ -157,7 +157,7 @@ public:
 		AlignConsecutiveAssignments = false;
 		AlignConsecutiveDeclarations = false;
 		AlignEscapedNewlines = ENAS_DontAlign;
-		AlignOperands = OAS_AlignAfterOperator;
+		AlignOperands = true;
 		AlignTrailingComments = false;
 		AllowAllArgumentsOnNextLine = true;
 		AllowAllConstructorInitializersOnNextLine = false;
@@ -431,7 +431,7 @@ public:
 					if (get_line() != last_line) state = 0;
 					else if (token.is(tok::greater)) {
 						state = 0;
-						if (starts_with(include_path, "mivik"))
+						if (starts_with(include_path, "mivik") || starts_with(include_path, "ametus"))
 							includes.push_back(
 								std::make_pair(
 									std::make_pair(begin_loc, begin + token.getLength() - sm.getFileOffset(begin_loc)),
@@ -476,6 +476,7 @@ struct rin_args {
 	bool no_expand: 1;
 	bool no_dce: 1;
 	bool no_remove: 1;
+	bool no_format: 1;
 	std::vector<std::string> extra_args;
 	const char *source_file;
 
@@ -500,6 +501,7 @@ inline rin_args parse_args(int argc, const char **argv) {
 		if (!strcmp(argv[i], "-no-expand")) args.no_expand = true;
 		else if (!strcmp(argv[i], "-no-dce")) args.no_dce = true;
 		else if (!strcmp(argv[i], "-no-remove")) args.no_remove = true;
+		else if (!strcmp(argv[i], "-no-format")) args.no_format = true;
 		else args.extra_args.push_back(argv[i]);
 	}
 	return args;
@@ -507,7 +509,7 @@ inline rin_args parse_args(int argc, const char **argv) {
 
 int main(int argc, const char **argv) {
 	if (argc < 2) {
-		llvm::errs() << "Usage: " << argv[0] << " [-no-expand] [-no-dce] <cpp_source_file>" << endl;
+		llvm::errs() << "Usage: " << argv[0] << " [-no-expand] [-no-dce] [-no-remove] [-no-format] <cpp_source_file>" << endl;
 		return 1;
 	}
 	const rin_args args = parse_args(argc, argv);
@@ -533,7 +535,7 @@ int main(int argc, const char **argv) {
 
 	if (!args.no_expand && !run_action(std::make_unique<coco::ExpandHeaderAction>(), args.extra_args)) return 1;
 	if (!args.no_dce && !run_action(std::make_unique<coco::DCEAction>(), args.extra_args)) return 1;
-	if (!run_action(std::make_unique<coco::FormatCodeAction>(), args.extra_args)) return 1;
+	if (!args.no_format && !run_action(std::make_unique<coco::FormatCodeAction>(), args.extra_args)) return 1;
 	if (!args.no_remove && !run_action(std::make_unique<coco::RemoveRinFlagAction>(), args.extra_args)) return 1;
 
 	llvm::outs() << coco::code;
